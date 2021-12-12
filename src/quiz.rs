@@ -4,6 +4,7 @@ use rand::seq::SliceRandom;
 use crate::difficulties::easy::EasyDifficulty;
 use crate::difficulties::medium::MediumDifficulty;
 use crate::difficulties::hard::HardDifficulty;
+use std::{thread, time};
 
 pub enum Difficulty {
     Easy,
@@ -40,7 +41,14 @@ impl Quiz {
     fn readline() -> String {
         let mut user_input = String::new();
         std::io::stdin().read_line(&mut user_input).unwrap();
-        user_input
+        // timelimit for user input to prevent infinite loop if user doesn't input anything or enters a new line character (\n) 
+        let timelimit = time::Duration::from_millis(100);
+        loop {
+            thread::sleep(timelimit);
+            std::io::stdin().read_line(&mut user_input).unwrap();
+        }
+
+        
     }
     pub fn ask(&self, quizzr_client: Quizzr) -> QuizResult {
         let client = tts_rust::GTTSClient {
@@ -69,9 +77,10 @@ impl Quiz {
             println!("{}. {:?}", index, &question.answers[index]);
         }
         let answer: i32 = Quiz::readline().trim().parse().unwrap();
+        
         QuizResult {
-            correct: if answer == question.correct_index { true } else { false },
-            incorrect: if answer != question.correct_index { true } else { false },
+            correct: answer == question.correct_index,
+            incorrect: answer != question.correct_index,
         }
     }
 }

@@ -14,23 +14,23 @@ pub struct Quizzr {
     difficulty: String,
 }
 
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Quizzr {
         tts: env::var("TTS")?,
         difficulty: env::var("DIFFICULTY")?,
     };
     if args.tts.is_empty() {
-        return Err("TTS is not set".into());
+        return Err("TTS is not set, use true or false.".into());
     }
     if args.difficulty.is_empty() {
-        return Err("DIFFICULTY is not set".into());
+        return Err("DIFFICULTY is not set, use easy, medium or hard.".into());
     }
     let quiz = Quiz::new(Difficulty::from_str(&args.difficulty)?);
     println!("{:?}", args);
     
     // this is where we will store results of the quiz
     let mut results: [bool; 4] = [false; 4];
+    // get correct answers from user
     for val in results.iter_mut() {
         let answer = quiz.ask(args.clone());
         // magic happens here
@@ -45,6 +45,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     file.write_all(string.as_bytes())?;
 
+    // print results to stdout for debugging purposes only (not needed for the quiz)
     // print Quizzr struct to file
     let mut file = File::create("quizzr.json")?;
     let string = serde_json::to_string(&args)?;
