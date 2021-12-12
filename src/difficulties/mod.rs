@@ -1,3 +1,4 @@
 pub mod easy;
 pub mod hard;
-pub mod normal;
+pub mod medium;
+pub mod typers;
